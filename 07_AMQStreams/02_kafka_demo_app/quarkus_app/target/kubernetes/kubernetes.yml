@@ -1,0 +1,110 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    app.quarkus.io/commit-id: 4154126c2d8bea82b52fa28b1e06730a0ea0ffcb
+    app.quarkus.io/build-timestamp: 2023-02-20 - 17:18:01 +0000
+  labels:
+    app.kubernetes.io/name: quarkus-rhosak-demo
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  name: quarkus-rhosak-demo
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/name: quarkus-rhosak-demo
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.quarkus.io/commit-id: 4154126c2d8bea82b52fa28b1e06730a0ea0ffcb
+    app.quarkus.io/build-timestamp: 2023-02-20 - 17:18:01 +0000
+  labels:
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+    app.kubernetes.io/name: quarkus-rhosak-demo
+  name: quarkus-rhosak-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/version: 1.0.0-SNAPSHOT
+      app.kubernetes.io/name: quarkus-rhosak-demo
+  template:
+    metadata:
+      annotations:
+        app.quarkus.io/commit-id: 4154126c2d8bea82b52fa28b1e06730a0ea0ffcb
+        app.quarkus.io/build-timestamp: 2023-02-20 - 17:18:01 +0000
+      labels:
+        app.kubernetes.io/version: 1.0.0-SNAPSHOT
+        app.kubernetes.io/name: quarkus-rhosak-demo
+    spec:
+      containers:
+        - args:
+            - -Dquarkus.http.host=0.0.0.0
+            - -Djava.util.logging.manager=org.jboss.logmanager.LogManager
+            - -jar
+            - /deployments/quarkus-run.jar
+          command:
+            - java
+          env:
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: JAVA_APP_JAR
+              value: /deployments/quarkus-run.jar
+          image: root/quarkus-rhosak-demo:1.0.0-SNAPSHOT
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /q/health/live
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 0
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 10
+          name: quarkus-rhosak-demo
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /q/health/ready
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 0
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 10
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    app.quarkus.io/commit-id: 4154126c2d8bea82b52fa28b1e06730a0ea0ffcb
+    app.quarkus.io/build-timestamp: 2023-02-20 - 17:18:01 +0000
+  labels:
+    app.kubernetes.io/name: quarkus-rhosak-demo
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  name: quarkus-rhosak-demo
+spec:
+  rules:
+    - http:
+        paths:
+          - backend:
+              service:
+                name: quarkus-rhosak-demo
+                port:
+                  name: http
+            path: /
+            pathType: Prefix

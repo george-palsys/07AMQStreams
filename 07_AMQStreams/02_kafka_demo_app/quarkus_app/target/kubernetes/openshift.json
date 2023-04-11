@@ -1,0 +1,212 @@
+{
+  "apiVersion" : "v1",
+  "kind" : "Service",
+  "metadata" : {
+    "annotations" : {
+      "app.openshift.io/vcs-url" : "<<unknown>>",
+      "app.quarkus.io/commit-id" : "4154126c2d8bea82b52fa28b1e06730a0ea0ffcb",
+      "app.quarkus.io/build-timestamp" : "2023-02-20 - 17:18:01 +0000"
+    },
+    "labels" : {
+      "app.kubernetes.io/name" : "quarkus-rhosak-demo",
+      "app.kubernetes.io/version" : "1.0.0-SNAPSHOT",
+      "app.openshift.io/runtime" : "quarkus"
+    },
+    "name" : "quarkus-rhosak-demo"
+  },
+  "spec" : {
+    "ports" : [ {
+      "name" : "http",
+      "port" : 80,
+      "targetPort" : 8080
+    } ],
+    "selector" : {
+      "app.kubernetes.io/name" : "quarkus-rhosak-demo",
+      "app.kubernetes.io/version" : "1.0.0-SNAPSHOT"
+    },
+    "type" : "ClusterIP"
+  }
+}{
+  "apiVersion" : "image.openshift.io/v1",
+  "kind" : "ImageStream",
+  "metadata" : {
+    "name" : "openjdk-11"
+  },
+  "spec" : {
+    "dockerImageRepository" : "registry.access.redhat.com/ubi8/openjdk-11"
+  }
+}{
+  "apiVersion" : "image.openshift.io/v1",
+  "kind" : "ImageStream",
+  "metadata" : {
+    "annotations" : {
+      "app.openshift.io/vcs-url" : "<<unknown>>",
+      "app.quarkus.io/commit-id" : "4154126c2d8bea82b52fa28b1e06730a0ea0ffcb",
+      "app.quarkus.io/build-timestamp" : "2023-02-20 - 17:18:01 +0000"
+    },
+    "labels" : {
+      "app.kubernetes.io/name" : "quarkus-rhosak-demo",
+      "app.kubernetes.io/version" : "1.0.0-SNAPSHOT",
+      "app.openshift.io/runtime" : "quarkus"
+    },
+    "name" : "quarkus-rhosak-demo"
+  },
+  "spec" : { }
+}{
+  "apiVersion" : "build.openshift.io/v1",
+  "kind" : "BuildConfig",
+  "metadata" : {
+    "annotations" : {
+      "app.openshift.io/vcs-url" : "<<unknown>>",
+      "app.quarkus.io/commit-id" : "4154126c2d8bea82b52fa28b1e06730a0ea0ffcb",
+      "app.quarkus.io/build-timestamp" : "2023-02-20 - 17:18:01 +0000"
+    },
+    "labels" : {
+      "app.kubernetes.io/name" : "quarkus-rhosak-demo",
+      "app.kubernetes.io/version" : "1.0.0-SNAPSHOT",
+      "app.openshift.io/runtime" : "quarkus"
+    },
+    "name" : "quarkus-rhosak-demo"
+  },
+  "spec" : {
+    "output" : {
+      "to" : {
+        "kind" : "ImageStreamTag",
+        "name" : "quarkus-rhosak-demo:1.0.0-SNAPSHOT"
+      }
+    },
+    "source" : {
+      "binary" : { }
+    },
+    "strategy" : {
+      "sourceStrategy" : {
+        "from" : {
+          "kind" : "ImageStreamTag",
+          "name" : "openjdk-11:latest"
+        }
+      }
+    }
+  }
+}{
+  "apiVersion" : "apps.openshift.io/v1",
+  "kind" : "DeploymentConfig",
+  "metadata" : {
+    "annotations" : {
+      "app.openshift.io/vcs-url" : "<<unknown>>",
+      "app.quarkus.io/commit-id" : "4154126c2d8bea82b52fa28b1e06730a0ea0ffcb",
+      "app.quarkus.io/build-timestamp" : "2023-02-20 - 17:18:01 +0000"
+    },
+    "labels" : {
+      "app.kubernetes.io/name" : "quarkus-rhosak-demo",
+      "app.kubernetes.io/version" : "1.0.0-SNAPSHOT",
+      "app.openshift.io/runtime" : "quarkus"
+    },
+    "name" : "quarkus-rhosak-demo"
+  },
+  "spec" : {
+    "replicas" : 1,
+    "selector" : {
+      "app.kubernetes.io/name" : "quarkus-rhosak-demo",
+      "app.kubernetes.io/version" : "1.0.0-SNAPSHOT"
+    },
+    "template" : {
+      "metadata" : {
+        "annotations" : {
+          "app.openshift.io/vcs-url" : "<<unknown>>",
+          "app.quarkus.io/commit-id" : "4154126c2d8bea82b52fa28b1e06730a0ea0ffcb",
+          "app.quarkus.io/build-timestamp" : "2023-02-20 - 17:18:01 +0000"
+        },
+        "labels" : {
+          "app.kubernetes.io/name" : "quarkus-rhosak-demo",
+          "app.kubernetes.io/version" : "1.0.0-SNAPSHOT",
+          "app.openshift.io/runtime" : "quarkus"
+        }
+      },
+      "spec" : {
+        "containers" : [ {
+          "args" : [ "-Dquarkus.http.host=0.0.0.0", "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", "-jar", "/deployments/quarkus-run.jar" ],
+          "command" : [ "java" ],
+          "env" : [ {
+            "name" : "KUBERNETES_NAMESPACE",
+            "valueFrom" : {
+              "fieldRef" : {
+                "fieldPath" : "metadata.namespace"
+              }
+            }
+          }, {
+            "name" : "JAVA_APP_JAR",
+            "value" : "/deployments/quarkus-rhosak-demo-1.0.0-SNAPSHOT-runner.jar"
+          } ],
+          "image" : "root/quarkus-rhosak-demo:1.0.0-SNAPSHOT",
+          "imagePullPolicy" : "IfNotPresent",
+          "livenessProbe" : {
+            "failureThreshold" : 3,
+            "httpGet" : {
+              "path" : "/q/health/live",
+              "port" : 8080,
+              "scheme" : "HTTP"
+            },
+            "initialDelaySeconds" : 0,
+            "periodSeconds" : 30,
+            "successThreshold" : 1,
+            "timeoutSeconds" : 10
+          },
+          "name" : "quarkus-rhosak-demo",
+          "ports" : [ {
+            "containerPort" : 8080,
+            "name" : "http",
+            "protocol" : "TCP"
+          } ],
+          "readinessProbe" : {
+            "failureThreshold" : 3,
+            "httpGet" : {
+              "path" : "/q/health/ready",
+              "port" : 8080,
+              "scheme" : "HTTP"
+            },
+            "initialDelaySeconds" : 0,
+            "periodSeconds" : 30,
+            "successThreshold" : 1,
+            "timeoutSeconds" : 10
+          }
+        } ]
+      }
+    },
+    "triggers" : [ {
+      "imageChangeParams" : {
+        "automatic" : true,
+        "containerNames" : [ "quarkus-rhosak-demo" ],
+        "from" : {
+          "kind" : "ImageStreamTag",
+          "name" : "quarkus-rhosak-demo:1.0.0-SNAPSHOT"
+        }
+      },
+      "type" : "ImageChange"
+    } ]
+  }
+}{
+  "apiVersion" : "route.openshift.io/v1",
+  "kind" : "Route",
+  "metadata" : {
+    "annotations" : {
+      "app.openshift.io/vcs-url" : "<<unknown>>",
+      "app.quarkus.io/commit-id" : "4154126c2d8bea82b52fa28b1e06730a0ea0ffcb",
+      "app.quarkus.io/build-timestamp" : "2023-02-20 - 17:18:01 +0000"
+    },
+    "labels" : {
+      "app.kubernetes.io/name" : "quarkus-rhosak-demo",
+      "app.kubernetes.io/version" : "1.0.0-SNAPSHOT",
+      "app.openshift.io/runtime" : "quarkus"
+    },
+    "name" : "quarkus-rhosak-demo"
+  },
+  "spec" : {
+    "port" : {
+      "targetPort" : 8080
+    },
+    "to" : {
+      "kind" : "Service",
+      "name" : "quarkus-rhosak-demo"
+    }
+  }
+}

@@ -1,0 +1,3 @@
+/workspace/OpenShift-PoC-Scenario/07_AMQStreams/02_kafka_demo_app/quarkus_app/src/main/java/org/acme/kafka/PriceResource.java
+/workspace/OpenShift-PoC-Scenario/07_AMQStreams/02_kafka_demo_app/quarkus_app/src/main/java/org/acme/kafka/PriceGenerator.java
+/workspace/OpenShift-PoC-Scenario/07_AMQStreams/02_kafka_demo_app/quarkus_app/src/main/java/org/acme/kafka/PriceConverter.java
